@@ -15,7 +15,7 @@ export async function performSearch(query: string): Promise<SearchResult[]> {
     const url = 'https://google.serper.dev/search';
     const data = JSON.stringify({
         q: `site:jusinfo.no OR site:lovdata.no ${query}`,
-        num: 10
+        num: 20
     });
 
     const requestOptions: RequestInit = {
