@@ -37,19 +37,25 @@ export default function ChatInterface() {
     const [threadId, setThreadId] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const searchContainerRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
+    // Auto-scroll chat messages when new messages arrive (only if near bottom)
     useEffect(() => {
-        if (activeTab === 'chat') {
-            scrollToBottom();
+        if (activeTab === 'chat' && messages.length > 0 && chatContainerRef.current) {
+            const container = chatContainerRef.current;
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+            
+            if (isNearBottom) {
+                setTimeout(() => {
+                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            }
         }
     }, [messages, activeTab]);
 
@@ -201,7 +207,10 @@ export default function ChatInterface() {
                 {/* Chat View */}
                 {activeTab === 'chat' && (
                     <div className="absolute inset-0 flex flex-col">
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
+                        <div 
+                            ref={chatContainerRef}
+                            className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth"
+                        >
                             {messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-full text-center px-6">
                                     <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
@@ -286,11 +295,15 @@ export default function ChatInterface() {
                 {/* Search View */}
                 {activeTab === 'search' && (
                     <div className="absolute inset-0 flex flex-col bg-slate-50 overflow-hidden">
-                        <div className="flex-1 overflow-y-auto">
-                            <div className="p-4 sm:p-8 w-full">
+                        <div 
+                            ref={searchContainerRef}
+                            className="flex-1 overflow-y-auto min-h-0"
+                            style={{ WebkitOverflowScrolling: 'touch' }}
+                        >
+                            <div className="p-4 sm:p-8 max-w-4xl mx-auto w-full">
                                 <div className="text-center mb-8">
                                     <h2 className="text-2xl font-bold text-slate-900 mb-2">Søk i rettskilder</h2>
-                                    <p className="text-slate-500">Søk direkte i lovdata.no og jusinfo.no</p>
+                                    <p className="text-slate-500">Søk direkte i jurdiske rettskilder</p>
                                 </div>
 
                                 <div className="bg-white p-2 rounded-full shadow-sm border border-slate-200 flex gap-2 w-full mb-8">
@@ -301,7 +314,7 @@ export default function ChatInterface() {
                                         type="text"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Søk etter lover, regler eller emner..."
+                                        placeholder="Bruk nøkkelord for å søke etter emner, lover eller regler..."
                                         className="flex-1 border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 h-10"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
@@ -319,33 +332,42 @@ export default function ChatInterface() {
                                     </button>
                                 </div>
 
-                                <div className="space-y-4 w-full">
-                                    {searchResults.length === 0 && !isSearching && searchQuery && (
-                                        <div className="text-center text-slate-400 py-12">
-                                            Ingen resultater funnet.
-                                        </div>
-                                    )}
+                                {isSearching && (
+                                    <div className="flex items-center justify-center py-12">
+                                        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                                        <span className="ml-2 text-slate-500">Søker...</span>
+                                    </div>
+                                )}
 
-                                    {searchResults.map((result, idx) => (
-                                        <div key={idx} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
-                                            <a
-                                                href={result.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="block"
-                                            >
-                                                <h3 className="text-blue-600 font-semibold text-lg mb-1 group-hover:underline flex items-center gap-2">
-                                                    {result.title}
-                                                    <ExternalLink size={14} className="opacity-0 group-hover:opacity-50 transition-opacity" />
-                                                </h3>
-                                                <div className="text-xs text-slate-400 mb-2 truncate">{result.link}</div>
-                                                <p className="text-slate-600 text-sm leading-relaxed">
-                                                    {result.snippet}
-                                                </p>
-                                            </a>
-                                        </div>
-                                    ))}
-                                </div>
+                                {!isSearching && (
+                                    <div className="space-y-4 w-full pb-8">
+                                        {searchResults.length === 0 && searchQuery && (
+                                            <div className="text-center text-slate-400 py-12">
+                                                Ingen resultater funnet.
+                                            </div>
+                                        )}
+
+                                        {searchResults.map((result, idx) => (
+                                            <div key={idx} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
+                                                <a
+                                                    href={result.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block"
+                                                >
+                                                    <h3 className="text-blue-600 font-semibold text-lg mb-1 group-hover:underline flex items-center gap-2">
+                                                        {result.title}
+                                                        <ExternalLink size={14} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                                                    </h3>
+                                                    <div className="text-xs text-slate-400 mb-2 truncate">{result.link}</div>
+                                                    <p className="text-slate-600 text-sm leading-relaxed">
+                                                        {result.snippet}
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -354,3 +376,4 @@ export default function ChatInterface() {
         </div>
     );
 }
+
