@@ -67,6 +67,26 @@ export default function ChatInterface() {
         }
     }, [input]);
 
+    // Set explicit height for search container
+    useEffect(() => {
+        if (activeTab === 'search' && searchContainerRef.current) {
+            const updateHeight = () => {
+                if (searchContainerRef.current) {
+                    const parent = searchContainerRef.current.parentElement;
+                    if (parent) {
+                        const height = parent.clientHeight;
+                        searchContainerRef.current.style.height = `${height}px`;
+                    }
+                }
+            };
+            
+            updateHeight();
+            window.addEventListener('resize', updateHeight);
+            
+            return () => window.removeEventListener('resize', updateHeight);
+        }
+    }, [activeTab]);
+
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!input.trim() || isLoading) return;
@@ -203,13 +223,13 @@ export default function ChatInterface() {
             </header>
 
             {/* Main Content Area */}
-            <div className="flex-1 min-h-0 relative">
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                 {/* Chat View */}
                 {activeTab === 'chat' && (
-                    <div className="absolute inset-0 flex flex-col">
+                    <div className="flex-1 flex flex-col min-h-0">
                         <div 
                             ref={chatContainerRef}
-                            className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth"
+                            className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth min-h-0"
                         >
                             {messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-full text-center px-6">
@@ -294,7 +314,7 @@ export default function ChatInterface() {
 
                 {/* Search View */}
                 {activeTab === 'search' && (
-                    <div className="absolute inset-0 flex flex-col bg-slate-50 overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                         <div 
                             ref={searchContainerRef}
                             className="flex-1 overflow-y-auto min-h-0"
