@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Message is required' }, { status: 400 });
         }
 
-        const assistantId = process.env.NEXT_PUBLIC_ASSISTANT_ID;
+        const assistantId = process.env.ASSISTANT_ID;
         if (!assistantId) {
             return NextResponse.json({ error: 'Assistant ID not configured' }, { status: 500 });
         }
@@ -34,8 +34,6 @@ export async function POST(req: NextRequest) {
             assistant_id: assistantId,
         });
 
-        const encoder = new TextEncoder();
-
         // Create a readable stream that we can pipe to the response
         const readableStream = new ReadableStream({
             async start(controller) {
@@ -52,13 +50,14 @@ export async function POST(req: NextRequest) {
             },
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
 
-async function consumeStream(stream: any, controller: ReadableStreamDefaultController, threadId: string) {
+async function consumeStream(stream: ReturnType<typeof openai.beta.threads.runs.stream>, controller: ReadableStreamDefaultController, threadId: string) {
     for await (const event of stream) {
         if (event.event === 'thread.message.delta') {
             const content = event.data.delta.content?.[0];
@@ -70,7 +69,7 @@ async function consumeStream(stream: any, controller: ReadableStreamDefaultContr
             const toolCalls = event.data.required_action?.submit_tool_outputs.tool_calls;
 
             if (toolCalls) {
-                const toolOutputs = await Promise.all(toolCalls.map(async (tc: any) => {
+                const toolOutputs = await Promise.all(toolCalls.map(async (tc) => {
                     if (tc.function.name === 'search_legal') {
                         let args;
                         try {

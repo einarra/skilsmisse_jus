@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, Loader2, Sparkles, Search, BookOpen, ExternalLink, Globe, MessageSquare } from 'lucide-react';
+import { Send, Bot, Loader2, Sparkles, Search, ExternalLink, Globe, MessageSquare } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -176,6 +176,7 @@ export default function ChatInterface() {
                 <div className="flex bg-[#111827] p-1 rounded-xl border border-[#374151] shadow-inner">
                     <button
                         onClick={() => setActiveTab('chat')}
+                        aria-label="Bytt til Assistent-fane"
                         className={cn(
                             "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
                             activeTab === 'chat'
@@ -188,6 +189,7 @@ export default function ChatInterface() {
                     </button>
                     <button
                         onClick={() => setActiveTab('search')}
+                        aria-label="Bytt til Kildesøk-fane"
                         className={cn(
                             "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
                             activeTab === 'search'
@@ -261,7 +263,8 @@ export default function ChatInterface() {
                                                         <ReactMarkdown
                                                             remarkPlugins={[remarkGfm]}
                                                             components={{
-                                                                a: ({ node, ...props }) => (
+                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                                                a: ({ node: _node, ...props }) => (
                                                                     <a {...props} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] font-medium hover:underline" />
                                                                 )
                                                             }}
@@ -303,12 +306,14 @@ export default function ChatInterface() {
                                             onChange={(e) => setInput(e.target.value)}
                                             onKeyDown={handleKeyDown}
                                             placeholder="Still et juridisk spørsmål..."
+                                            aria-label="Juridisk spørsmål inntasting"
                                             rows={1}
                                             className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-3 px-4 max-h-40 text-[#000000] placeholder:text-gray-400 text-base leading-relaxed"
                                         />
                                         <button
                                             onClick={() => handleSubmit()}
                                             disabled={isLoading || !input.trim()}
+                                            aria-label="Send melding"
                                             className="flex-none p-3.5 bg-[#3B82F6] text-white rounded-xl hover:bg-[#2563EB] disabled:opacity-50 disabled:cursor-not-allowed shadow-soft transition-all mb-0.5"
                                         >
                                             <Send size={20} />
@@ -348,6 +353,7 @@ export default function ChatInterface() {
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             placeholder="Bruk nøkkelord for å søke..."
+                                            aria-label="Søk i rettskilder"
                                             className="flex-1 bg-transparent border-none focus:ring-0 text-[#F9FAFB] placeholder:text-[#9CA3AF] h-10"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
@@ -359,6 +365,7 @@ export default function ChatInterface() {
                                         <button
                                             onClick={() => handleSearch()}
                                             disabled={isSearching || !searchQuery.trim()}
+                                            aria-label="Søk"
                                             className="bg-[#3B82F6] text-white px-6 py-2 rounded-lg hover:bg-[#2563EB] disabled:opacity-50 font-medium transition-all shadow-soft"
                                         >
                                             {isSearching ? <Loader2 size={18} className="animate-spin" /> : 'Søk'}

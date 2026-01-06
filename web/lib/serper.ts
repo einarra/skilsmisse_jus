@@ -14,7 +14,7 @@ export async function performSearch(query: string): Promise<SearchResult[]> {
 
     const url = 'https://google.serper.dev/search';
     const data = JSON.stringify({
-        q: `site:lovdata.no OR site:SNL.no OR site:jusinfo.no${query}`,
+        q: `site:lovdata.no OR site:SNL.no OR site:jusinfo.no ${query}`,
         num: 15
     });
 
@@ -27,17 +27,13 @@ export async function performSearch(query: string): Promise<SearchResult[]> {
         body: data
     };
 
-    try {
-        const response = await fetch(url, requestOptions);
-        if (!response.ok) {
-            throw new Error(`Serper API error: ${response.statusText}`);
-        }
-        const result = await response.json();
-        return result.organic || [];
-    } catch (error) {
-        console.error("Error searching legal sources:", error);
-        return [];
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Serper API error: ${response.status} ${response.statusText} - ${errorBody}`);
     }
+    const result = await response.json();
+    return result.organic || [];
 }
 
 export async function searchLegalSources(query: string) {
@@ -45,8 +41,8 @@ export async function searchLegalSources(query: string) {
 
     // Format results for the LLM
     if (results.length > 0) {
-        return results.map((item: any) => `Title: ${item.title}\nLink: ${item.link}\nSnippet: ${item.snippet}`).join('\n\n');
+        return results.map((item: SearchResult) => `Title: ${item.title}\nLink: ${item.link}\nSnippet: ${item.snippet}`).join('\n\n');
     } else {
-        return "No results found on lovdata.no or SNL.no or jusinfo.no for this query.";
+        return "No results found on lovdata.no or SNL.no or wikipedia.org for this query.";
     }
 }
