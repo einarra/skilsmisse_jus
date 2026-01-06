@@ -30,8 +30,9 @@ async function main() {
 
   // 1. Create or Get Vector Store
   let vectorStoreId;
+  // @ts-ignore
   const vectorStores = await openai.beta.vectorStores.list();
-  const existingStore = vectorStores.data.find((vs) => vs.name === vectorStoreName);
+  const existingStore = vectorStores.data.find((vs: any) => vs.name === vectorStoreName);
 
   if (existingStore) {
     console.log(`✅ Found existing Vector Store: ${existingStore.id}`);
@@ -39,13 +40,16 @@ async function main() {
 
     // Clear existing files from store to ensure ONLY the 3 pdfs are there
     console.log("🧹 Clearing existing files from vector store...");
+    // @ts-ignore
     const currentFiles = await openai.beta.vectorStores.files.list(vectorStoreId);
     for (const file of currentFiles.data) {
+      // @ts-ignore
       await openai.beta.vectorStores.files.del(vectorStoreId, file.id);
     }
     console.log("✅ Vector store cleared.");
   } else {
     console.log("🚀 Creating new Vector Store...");
+    // @ts-ignore
     const newStore = await openai.beta.vectorStores.create({
       name: vectorStoreName,
     });
@@ -75,6 +79,7 @@ async function main() {
 
   if (fileIds.length > 0) {
     console.log(`Adding ${fileIds.length} files to vector store...`);
+    // @ts-ignore
     await openai.beta.vectorStores.fileBatches.createAndPoll(vectorStoreId, {
       file_ids: fileIds
     });
