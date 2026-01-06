@@ -4,8 +4,28 @@
 
 @layer base {
   :root {
-    --background: 248 250 252;
-    --foreground: 15 23 42;
+    --background: 245 237 226;
+    /* Warm Light Beige */
+    --foreground: 31 41 51;
+    /* On Light Primary Text (#1F2933) */
+
+    --brand-deep-blue: #041426;
+    --brand-deep-green: #043326;
+    --brand-warm-beige: #F5EDE2;
+    --brand-warm-gray: #E7E1D7;
+
+    --text-on-dark: #F9FAFB;
+    --text-on-light: #1F2933;
+    --text-muted-dark: #9CA3AF;
+    --text-muted-light: #6B7280;
+
+    --accent-blue: #3B82F6;
+    --accent-green: #16A34A;
+    --accent-amber: #F59E0B;
+    --accent-red: #DC2626;
+
+    --border-subtle: #374151;
+    --border-strong: #111827;
   }
 }
 
@@ -13,14 +33,16 @@ html,
 body {
   height: 100%;
   overscroll-behavior-y: none;
-  /* Prevent bounce */
+  background-color: var(--brand-deep-blue);
+  /* Default to deep blue for shell */
 }
 
 body {
-  color: rgb(var(--foreground));
-  background: rgb(var(--background));
+  color: var(--text-on-light);
+  background: var(--brand-warm-beige);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 /* Custom scrollbar for webkit */

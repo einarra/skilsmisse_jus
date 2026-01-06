@@ -14,8 +14,8 @@ export async function performSearch(query: string): Promise<SearchResult[]> {
 
     const url = 'https://google.serper.dev/search';
     const data = JSON.stringify({
-        q: `site:jusinfo.no OR site:lovdata.no ${query}`,
-        num: 20
+        q: `site:lovdata.no OR site:SNL.no OR site:jusinfo.no${query}`,
+        num: 15
     });
 
     const requestOptions: RequestInit = {
@@ -47,6 +47,6 @@ export async function searchLegalSources(query: string) {
     if (results.length > 0) {
         return results.map((item: any) => `Title: ${item.title}\nLink: ${item.link}\nSnippet: ${item.snippet}`).join('\n\n');
     } else {
-        return "No results found on jusinfo.no or lovdata.no for this query.";
+        return "No results found on lovdata.no or SNL.no or jusinfo.no for this query.";
     }
 }

@@ -25,8 +25,8 @@ async function main() {
     process.exit(1);
   }
 
-  const files = fs.readdirSync(kilderDir).filter(f => f.endsWith('.pdf') || f.endsWith('.md'));
-  console.log(`found ${files.length} files (PDF/MD).`);
+  const files = fs.readdirSync(kilderDir).filter(f => f.endsWith('.pdf'));
+  console.log(`found ${files.length} PDF files.`);
 
   // 1. Create or Get Vector Store
   let vectorStoreId;
@@ -37,6 +37,16 @@ async function main() {
   if (existingStore) {
     console.log(`✅ Found existing Vector Store: ${existingStore.id}`);
     vectorStoreId = existingStore.id;
+
+    // Clear existing files from store to ensure ONLY the 3 pdfs are there
+    console.log("🧹 Clearing existing files from vector store...");
+    // @ts-ignore
+    const currentFiles = await openai.vectorStores.files.list(vectorStoreId);
+    for (const file of currentFiles.data) {
+      // @ts-ignore
+      await openai.vectorStores.files.del(vectorStoreId, file.id);
+    }
+    console.log("✅ Vector store cleared.");
   } else {
     console.log("🚀 Creating new Vector Store...");
     // @ts-ignore
@@ -48,13 +58,6 @@ async function main() {
   }
 
   // 2. Upload Files to Vector Store
-  // Only upload if store is empty or we want to force update (simple logic: just upload all for now, OpenAI handles dups usually or we catch error)
-  // Check file counts in store
-  // @ts-ignore
-  const storeFiles = await openai.vectorStores.files.list(vectorStoreId);
-  const existingFileNames = new Set(); // Can't easily get names from file list directly without retrieving file objects, but let's just upload.
-  // Actually, better to use the file_batches upload which handles things well.
-
   console.log("uploading files...");
   const fileIds: string[] = [];
 
@@ -92,24 +95,23 @@ async function main() {
   let assistantId;
   const instructions = `
 Du er en juridisk assistent som spesialiserer seg på norsk skilsmesse- og familierett.
-Den viktigste loven er "lov om ekteskap", som finnes i kildene mine. Men de andre lovene er også viktige.
+Den viktigste loven er "lov om ekteskap", som finnes i kildene mine i vector store. Men de andre lovene er også viktige.
 
 Du har tilgang til opplastede dokumenter i din vector store og et søkeverktøy \`search_legal\`.
-- Start med å søke i de opplastede dokumentene. 
-- Berike deretter svaret ditt med hvordan regelverket er fulgt i praksis ved å bruke søkeverktøyet \`search_legal\`.
-- Legg ved nyttige linker til websteder du finner i søkeverktøyet \`search_legal\`.
 
+BRUK AV SØKEVERKTØY (search_legal):
+1. **Strategisk søk**: Når du bruker \`search_legal\`, skal du trekke ut spesifikke juridiske nøkkelord, paragrafnumre eller rettslige begreper fra brukerens spørsmål for å få best mulige resultater.
+2. **Iterativ prosess**: Dersom det første søket ikke gir relevante svar, eller informasjonen er mangelfull, skal du endre søkeordene (f.eks. bruke synonymer eller mer spesifikke termer) og søke på nytt. Du kan gjøre flere søk etter hverandre for å sikre et korrekt og utfyllende svar.
+3. **Kombiner kilder**: Start alltid med å søke i de opplastede dokumentene i vector store. Bruk deretter \`search_legal\` for å berike svaret med praksis, tolkninger og oppdatert informasjon fra lovdata.no, SNL.no og wikipedia.org.
 
-VIKTIG OM KILDEHENVISNING
-Du skal ALLTID oppgi hvilken lov og hvilken paragraf (§) svaret ditt er basert på. 
-F.eks: "I henhold til Ekteskapsloven § 58..." eller "Dette følger av Husstandsfellesskapsloven § 3." 
-Du skal også legge ved lenke til alle websteder du finner i søkeverktøyet \`search_legal\`.
+VIKTIG OM KILDEHENVISNING:
+- Du skal ALLTID oppgi hvilken lov og hvilken paragraf (§) svaret ditt er basert på (f.eks: "I henhold til Ekteskapsloven § 58...").
+- **Klippbare lenker**: Du skal ALLTID formatere juridiske kilder og referanser som klikkbare Markdown-lenker hvis du har en URL. Bruk formatet: \`[Ekteskapsloven § 58](URL)\`.
+- Du skal legge ved direkte lenker til alle relevante kilder du finner via \`search_legal\`, spesielt til lovdata.no når mulig.
+- Ikke skriv rå URL-er i teksten, bruk alltid [Beskrivelse](URL).
 
-
-Dersom du ikke finner svaret i kildene, skal du tydelig si: "Jeg finner ikke informasjon om dette i kildene mine".
-Du skal være saklig og presis, men også utfyllende og hjelpsom. Gi utfyllende forklaringer ved å benytte søkeverktøyet \`search_legal\`.
-
-Svar på norsk.
+Dersom du etter flere søk fortsatt ikke finner svaret, skal du tydelig si: "Jeg finner ikke informasjon om dette i kildene mine".
+Vær saklig, presis, og hjelpsom. Svar på norsk.
   `.trim();
 
   const tools: any[] = [
@@ -118,7 +120,7 @@ Svar på norsk.
       type: "function",
       function: {
         name: "search_legal",
-        description: "Søk etter juridisk informasjon på jusinfo.no og lovdata.no. Bruk dette til å berike svaret ditt med hvordan regelverket er fulgt i praksis og finne oppdaterte lovtekster.",
+        description: "Søk etter juridisk informasjon på lovdata.no, SNL.no og wikipedia.org. Bruk dette til å berike svaret ditt med hvordan regelverket er fulgt i praksis.",
         parameters: {
           type: "object",
           properties: {

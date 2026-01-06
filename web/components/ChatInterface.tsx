@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, Loader2, Sparkles, Search, BookOpen, ExternalLink, Globe, MessageSquare } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -50,7 +52,7 @@ export default function ChatInterface() {
         if (activeTab === 'chat' && messages.length > 0 && chatContainerRef.current) {
             const container = chatContainerRef.current;
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-            
+
             if (isNearBottom) {
                 setTimeout(() => {
                     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -67,25 +69,6 @@ export default function ChatInterface() {
         }
     }, [input]);
 
-    // Set explicit height for search container
-    useEffect(() => {
-        if (activeTab === 'search' && searchContainerRef.current) {
-            const updateHeight = () => {
-                if (searchContainerRef.current) {
-                    const parent = searchContainerRef.current.parentElement;
-                    if (parent) {
-                        const height = parent.clientHeight;
-                        searchContainerRef.current.style.height = `${height}px`;
-                    }
-                }
-            };
-            
-            updateHeight();
-            window.addEventListener('resize', updateHeight);
-            
-            return () => window.removeEventListener('resize', updateHeight);
-        }
-    }, [activeTab]);
 
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -179,220 +162,260 @@ export default function ChatInterface() {
     };
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-50 overflow-hidden">
-            {/* Header with Navigation */}
-            <header className="flex-none h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-10 shadow-sm">
+        <div className="flex flex-col h-[100dvh] bg-[#041426] overflow-hidden">
+            {/* Header */}
+            <header className="flex-none h-16 bg-[#041426] border-b border-[#374151] flex items-center justify-between px-4 z-10 shadow-sm">
                 <div className="flex items-center gap-2">
-                    <div className="bg-slate-900 text-white p-1.5 rounded-lg">
+                    <div className="bg-[#3B82F6] text-white p-1.5 rounded-lg shadow-soft">
                         <Bot size={18} />
                     </div>
-                    <h1 className="text-sm font-semibold text-slate-900 tracking-tight hidden sm:block">Skilsmisse Jus Agent</h1>
+                    <h1 className="text-sm font-semibold text-[#F9FAFB] tracking-tight hidden sm:block">Skilsmisse Jus Agent</h1>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="flex bg-slate-100 p-1 rounded-lg">
+                {/* Navigation Switcher */}
+                <div className="flex bg-[#111827] p-1 rounded-xl border border-[#374151] shadow-inner">
                     <button
                         onClick={() => setActiveTab('chat')}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                            "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
                             activeTab === 'chat'
-                                ? "bg-white text-slate-900 shadow-sm"
-                                : "text-slate-500 hover:text-slate-700"
+                                ? "bg-[#3B82F6] text-white shadow-soft"
+                                : "text-[#9CA3AF] hover:text-[#F9FAFB]"
                         )}
                     >
-                        <MessageSquare size={16} />
-                        AI Assistent
+                        <MessageSquare size={14} />
+                        Assistent
                     </button>
                     <button
                         onClick={() => setActiveTab('search')}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                            "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
                             activeTab === 'search'
-                                ? "bg-white text-slate-900 shadow-sm"
-                                : "text-slate-500 hover:text-slate-700"
+                                ? "bg-[#3B82F6] text-white shadow-soft"
+                                : "text-[#9CA3AF] hover:text-[#F9FAFB]"
                         )}
                     >
-                        <Globe size={16} />
+                        <Globe size={14} />
                         Kildesøk
                     </button>
                 </div>
 
-                <div className="ml-2 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-full hidden sm:block">
+                <div className="hidden xs:block px-2 py-0.5 bg-[#043326] text-[#16A34A] text-[10px] font-bold uppercase tracking-wider rounded-full border border-[#16A34A]/20">
                     Beta
                 </div>
             </header>
 
             {/* Main Content Area */}
             <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-                {/* Chat View */}
-                {activeTab === 'chat' && (
-                    <div className="flex-1 flex flex-col min-h-0">
-                        <div 
-                            ref={chatContainerRef}
-                            className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth min-h-0"
+                <AnimatePresence mode="wait">
+                    {/* Chat View */}
+                    {activeTab === 'chat' && (
+                        <motion.div
+                            key="chat"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="flex-1 flex flex-col min-h-0 overflow-hidden"
                         >
-                            {messages.length === 0 && (
-                                <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                                    <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
-                                        <Sparkles className="w-8 h-8 text-blue-600" />
-                                    </div>
-                                    <h2 className="text-xl font-bold text-slate-900 mb-2">Hei, hva lurer du på?</h2>
-                                    <p className="text-slate-500 max-w-xs text-sm leading-relaxed">
-                                        Jeg kan hjelpe deg med spørsmål om ekteskapsloven, gjeld og deling av bo.
-                                    </p>
-                                </div>
-                            )}
-
-                            {messages.map((msg, index) => (
-                                <div
-                                    key={index}
-                                    className={cn(
-                                        "flex flex-col max-w-[85%] sm:max-w-[75%]",
-                                        msg.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
+                            <div
+                                ref={chatContainerRef}
+                                className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth"
+                                style={{ height: '100%' }}
+                            >
+                                <AnimatePresence initial={false}>
+                                    {messages.length === 0 && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="flex flex-col items-center justify-center h-full text-center px-6"
+                                        >
+                                            <div className="bg-[#F5EDE2] p-4 rounded-2xl shadow-soft mb-4">
+                                                <Sparkles className="w-8 h-8 text-[#3B82F6]" />
+                                            </div>
+                                            <h2 className="text-xl font-bold text-[#F9FAFB] mb-2">Hei, hva lurer du på?</h2>
+                                            <p className="text-[#9CA3AF] max-w-xs text-sm leading-relaxed">
+                                                Jeg kan hjelpe deg med spørsmål om ekteskapsloven, gjeld og deling av bo.
+                                            </p>
+                                        </motion.div>
                                     )}
-                                >
-                                    <div className={cn(
-                                        "rounded-2xl px-5 py-3 shadow-sm text-sm sm:text-base leading-relaxed whitespace-pre-wrap",
-                                        msg.role === 'user'
-                                            ? "bg-blue-600 text-white rounded-tr-sm"
-                                            : "bg-white text-slate-800 border border-slate-200 rounded-tl-sm"
-                                    )}>
-                                        {msg.role === 'assistant' ? (
-                                            <div className="prose prose-slate prose-sm max-w-none dark:prose-invert">
-                                                <ReactMarkdown
-                                                    components={{
-                                                        a: ({ node, ...props }) => (
-                                                            <a {...props} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" />
-                                                        )
-                                                    }}
-                                                >
-                                                    {cleanText(msg.content)}
-                                                </ReactMarkdown>
+
+                                    {messages.map((msg, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            transition={{ duration: 0.2 }}
+                                            className={cn(
+                                                "flex flex-col max-w-[85%] sm:max-w-[75%]",
+                                                msg.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "rounded-2xl px-5 py-3 shadow-soft text-sm sm:text-base leading-relaxed whitespace-pre-wrap",
+                                                msg.role === 'user'
+                                                    ? "bg-[#FFFFFF] text-[#000000] rounded-tr-sm shadow-sm"
+                                                    : "bg-[#F5EDE2] text-[#1F2933] rounded-tl-sm border border-[#E7E1D7]"
+                                            )}>
+                                                {msg.role === 'assistant' ? (
+                                                    <div className="prose prose-slate prose-sm max-w-none">
+                                                        <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
+                                                            components={{
+                                                                a: ({ node, ...props }) => (
+                                                                    <a {...props} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] font-medium hover:underline" />
+                                                                )
+                                                            }}
+                                                        >
+                                                            {cleanText(msg.content)}
+                                                        </ReactMarkdown>
+                                                    </div>
+                                                ) : (
+                                                    msg.content
+                                                )}
                                             </div>
-                                        ) : (
-                                            msg.content
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                                        </motion.div>
+                                    ))}
 
-                            {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
-                                <div className="flex mr-auto items-start max-w-[75%]">
-                                    <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 border border-slate-200 shadow-sm flex items-center gap-2">
-                                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                                        <span className="text-sm text-slate-500">Tenker...</span>
-                                    </div>
-                                </div>
-                            )}
+                                    {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="flex mr-auto items-start max-w-[75%]"
+                                        >
+                                            <div className="bg-[#F5EDE2] rounded-2xl rounded-tl-sm px-4 py-3 border border-[#E7E1D7] shadow-soft flex items-center gap-2">
+                                                <Loader2 className="w-4 h-4 animate-spin text-[#3B82F6]" />
+                                                <span className="text-sm text-[#6B7280]">Tenker...</span>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
-                            <div ref={messagesEndRef} className="h-4" />
-                        </div>
-
-                        {/* Input Area */}
-                        <div className="flex-none bg-white border-t border-slate-200 p-3 sm:p-4 pb-safe">
-                            <div className="w-full relative flex items-end gap-2 bg-slate-100 p-2 rounded-3xl border border-transparent focus-within:border-blue-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all">
-                                <textarea
-                                    ref={inputRef}
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    placeholder="Still et juridisk spørsmål..."
-                                    rows={1}
-                                    className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2.5 px-3 max-h-32 text-slate-900 placeholder:text-slate-400 text-base"
-                                />
-                                <button
-                                    onClick={() => handleSubmit()}
-                                    disabled={isLoading || !input.trim()}
-                                    className="flex-none p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-0.5"
-                                >
-                                    <Send size={18} />
-                                </button>
+                                <div ref={messagesEndRef} className="h-4" />
                             </div>
-                        </div>
-                    </div>
-                )}
 
-                {/* Search View */}
-                {activeTab === 'search' && (
-                    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                        <div 
-                            ref={searchContainerRef}
-                            className="flex-1 overflow-y-auto min-h-0"
-                            style={{ WebkitOverflowScrolling: 'touch' }}
+                            {/* Input Area */}
+                            <div className="flex-none bg-[#041426] border-t border-[#374151]" style={{ padding: '1.5rem 1rem 2.5rem 1rem' }}>
+                                <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+                                    <div className="relative flex items-end gap-3 bg-[#FFFFFF] p-3 rounded-2xl border border-gray-200 shadow-xl focus-within:border-[#3B82F6] focus-within:ring-4 focus-within:ring-[#3B82F6]/10 transition-all">
+                                        <textarea
+                                            ref={inputRef}
+                                            value={input}
+                                            onChange={(e) => setInput(e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder="Still et juridisk spørsmål..."
+                                            rows={1}
+                                            className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-3 px-4 max-h-40 text-[#000000] placeholder:text-gray-400 text-base leading-relaxed"
+                                        />
+                                        <button
+                                            onClick={() => handleSubmit()}
+                                            disabled={isLoading || !input.trim()}
+                                            className="flex-none p-3.5 bg-[#3B82F6] text-white rounded-xl hover:bg-[#2563EB] disabled:opacity-50 disabled:cursor-not-allowed shadow-soft transition-all mb-0.5"
+                                        >
+                                            <Send size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* Search View */}
+                    {activeTab === 'search' && (
+                        <motion.div
+                            key="search"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="flex-1 flex flex-col min-h-0 overflow-hidden"
                         >
-                            <div className="p-4 sm:p-8 max-w-4xl mx-auto w-full">
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Søk i rettskilder</h2>
-                                    <p className="text-slate-500">Søk direkte i jurdiske rettskilder</p>
+                            <div
+                                ref={searchContainerRef}
+                                className="flex-1 overflow-y-auto"
+                                style={{ height: '100%', WebkitOverflowScrolling: 'touch' }}
+                            >
+                                <div className="p-4 sm:p-8 max-w-4xl mx-auto w-full">
+                                    <div className="text-center mb-10">
+                                        <h2 className="text-2xl font-bold text-[#F9FAFB] mb-2">Søk i rettskilder</h2>
+                                        <p className="text-[#9CA3AF]">Søk direkte i jurdiske rettskilder</p>
+                                    </div>
+
+                                    <div className="bg-[#111827] p-2 rounded-xl shadow-soft border border-[#374151] flex gap-2 w-full mb-10 focus-within:border-[#3B82F6] transition-all">
+                                        <div className="pl-3 flex items-center pointer-events-none text-[#9CA3AF]">
+                                            <Search size={20} />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Bruk nøkkelord for å søke..."
+                                            className="flex-1 bg-transparent border-none focus:ring-0 text-[#F9FAFB] placeholder:text-[#9CA3AF] h-10"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleSearch();
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            onClick={() => handleSearch()}
+                                            disabled={isSearching || !searchQuery.trim()}
+                                            className="bg-[#3B82F6] text-white px-6 py-2 rounded-lg hover:bg-[#2563EB] disabled:opacity-50 font-medium transition-all shadow-soft"
+                                        >
+                                            {isSearching ? <Loader2 size={18} className="animate-spin" /> : 'Søk'}
+                                        </button>
+                                    </div>
+
+                                    {isSearching && (
+                                        <div className="flex items-center justify-center py-12">
+                                            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                                            <span className="ml-2 text-slate-500">Søker...</span>
+                                        </div>
+                                    )}
+
+                                    {!isSearching && (
+                                        <div className="space-y-4 w-full pb-8">
+                                            {searchResults.length === 0 && searchQuery && (
+                                                <div className="text-center text-slate-400 py-12">
+                                                    Ingen resultater funnet.
+                                                </div>
+                                            )}
+
+                                            <AnimatePresence>
+                                                {searchResults.map((result, idx) => (
+                                                    <motion.div
+                                                        key={idx}
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        transition={{ delay: idx * 0.05 }}
+                                                        className="bg-[#F5EDE2] p-5 rounded-xl border border-[#E7E1D7] shadow-soft hover:shadow-lg transition-all group"
+                                                    >
+                                                        <a
+                                                            href={result.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="block"
+                                                        >
+                                                            <h3 className="text-[#3B82F6] font-bold text-lg mb-1 group-hover:underline flex items-center gap-2">
+                                                                {result.title}
+                                                                <ExternalLink size={14} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                                                            </h3>
+                                                            <div className="text-xs text-[#6B7280] mb-3 truncate">{result.link}</div>
+                                                            <p className="text-[#1F2933] text-sm leading-relaxed">
+                                                                {result.snippet}
+                                                            </p>
+                                                        </a>
+                                                    </motion.div>
+                                                ))}
+                                            </AnimatePresence>
+                                        </div>
+                                    )}
                                 </div>
-
-                                <div className="bg-white p-2 rounded-full shadow-sm border border-slate-200 flex gap-2 w-full mb-8">
-                                    <div className="pl-3 flex items-center pointer-events-none text-slate-400">
-                                        <Search size={20} />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Bruk nøkkelord for å søke etter emner, lover eller regler..."
-                                        className="flex-1 border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 h-10"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                handleSearch();
-                                            }
-                                        }}
-                                    />
-                                    <button
-                                        onClick={() => handleSearch()}
-                                        disabled={isSearching || !searchQuery.trim()}
-                                        className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors"
-                                    >
-                                        {isSearching ? <Loader2 size={18} className="animate-spin" /> : 'Søk'}
-                                    </button>
-                                </div>
-
-                                {isSearching && (
-                                    <div className="flex items-center justify-center py-12">
-                                        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                                        <span className="ml-2 text-slate-500">Søker...</span>
-                                    </div>
-                                )}
-
-                                {!isSearching && (
-                                    <div className="space-y-4 w-full pb-8">
-                                        {searchResults.length === 0 && searchQuery && (
-                                            <div className="text-center text-slate-400 py-12">
-                                                Ingen resultater funnet.
-                                            </div>
-                                        )}
-
-                                        {searchResults.map((result, idx) => (
-                                            <div key={idx} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
-                                                <a
-                                                    href={result.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="block"
-                                                >
-                                                    <h3 className="text-blue-600 font-semibold text-lg mb-1 group-hover:underline flex items-center gap-2">
-                                                        {result.title}
-                                                        <ExternalLink size={14} className="opacity-0 group-hover:opacity-50 transition-opacity" />
-                                                    </h3>
-                                                    <div className="text-xs text-slate-400 mb-2 truncate">{result.link}</div>
-                                                    <p className="text-slate-600 text-sm leading-relaxed">
-                                                        {result.snippet}
-                                                    </p>
-                                                </a>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
-                        </div>
-                    </div>
-                )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
+
         </div>
     );
 }
