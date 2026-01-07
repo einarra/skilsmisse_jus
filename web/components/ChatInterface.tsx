@@ -164,46 +164,52 @@ export default function ChatInterface() {
     return (
         <div className="flex flex-col h-[100dvh] bg-[#041426] overflow-hidden">
             {/* Header */}
-            <header className="flex-none h-16 bg-[#041426] border-b border-[#374151] flex items-center justify-between px-4 z-10 shadow-sm">
-                <div className="flex items-center gap-2">
-                    <div className="bg-[#3B82F6] text-white p-1.5 rounded-lg shadow-soft">
-                        <Bot size={18} />
+            <header className="flex-none bg-[#041426] border-b border-[#374151] px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="flex items-center z-30">
+                    <div className="rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105" style={{ height: '36px', flexShrink: 0 }}>
+                        <img src="/logo.jpg" alt="LovSvar Logo" className="h-full w-auto object-contain" />
                     </div>
-                    <h1 className="text-sm font-semibold text-[#F9FAFB] tracking-tight hidden sm:block">Skilsmisse Jus Agent</h1>
                 </div>
 
-                {/* Navigation Switcher */}
-                <div className="flex bg-[#111827] p-1 rounded-xl border border-[#374151] shadow-inner">
-                    <button
-                        onClick={() => setActiveTab('chat')}
-                        aria-label="Bytt til Assistent-fane"
-                        className={cn(
-                            "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
-                            activeTab === 'chat'
-                                ? "bg-[#3B82F6] text-white shadow-soft"
-                                : "text-[#9CA3AF] hover:text-[#F9FAFB]"
-                        )}
-                    >
-                        <MessageSquare size={14} />
-                        Assistent
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('search')}
-                        aria-label="Bytt til Kildesøk-fane"
-                        className={cn(
-                            "flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
-                            activeTab === 'search'
-                                ? "bg-[#3B82F6] text-white shadow-soft"
-                                : "text-[#9CA3AF] hover:text-[#F9FAFB]"
-                        )}
-                    >
-                        <Globe size={14} />
-                        Kildesøk
-                    </button>
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
+                    <h1 className="text-xs sm:text-sm font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto">
+                        LovSvar - Ekteskap og skilsmisse
+                    </h1>
                 </div>
 
-                <div className="hidden xs:block px-2 py-0.5 bg-[#043326] text-[#16A34A] text-[10px] font-bold uppercase tracking-wider rounded-full border border-[#16A34A]/20">
-                    Beta
+                <div className="flex items-center gap-3 z-30">
+                    <div className="flex bg-[#111827] p-1 rounded-xl border border-[#374151] shadow-inner" style={{ display: 'flex' }}>
+                        <button
+                            onClick={() => setActiveTab('chat')}
+                            aria-label="Bytt til Assistent-fane"
+                            className={cn(
+                                "flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
+                                activeTab === 'chat'
+                                    ? "bg-[#3B82F6] text-white shadow-soft"
+                                    : "text-[#9CA3AF] hover:text-[#F9FAFB]"
+                            )}
+                        >
+                            <MessageSquare size={12} />
+                            <span className="hidden xs:inline">Assistent</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('search')}
+                            aria-label="Bytt til Kildesøk-fane"
+                            className={cn(
+                                "flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
+                                activeTab === 'search'
+                                    ? "bg-[#3B82F6] text-white shadow-soft"
+                                    : "text-[#9CA3AF] hover:text-[#F9FAFB]"
+                            )}
+                        >
+                            <Globe size={12} />
+                            <span className="hidden xs:inline">Kildesøk</span>
+                        </button>
+                    </div>
+
+                    <div className="hidden md:block px-2 py-0.5 bg-[#043326] text-[#16A34A] text-[10px] font-bold uppercase tracking-wider rounded-full border border-[#16A34A]/20">
+                        Beta
+                    </div>
                 </div>
             </header>
 
