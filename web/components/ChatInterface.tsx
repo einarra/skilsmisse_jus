@@ -174,8 +174,8 @@ export default function ChatInterface() {
                     </div>
                 </div>
 
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style={{ left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '60%' }}>
-                    <h1 className="text-sm sm:text-base md:text-lg font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center" style={{ left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '60%' }}>
+                    <h1 className="text-xs sm:text-sm md:text-base font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto leading-tight">
                         Ekteskap
                     </h1>
                 </div>
