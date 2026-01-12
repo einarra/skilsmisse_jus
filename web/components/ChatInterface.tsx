@@ -165,9 +165,13 @@ export default function ChatInterface() {
         <div className="flex flex-col h-[100dvh] bg-[#041426] overflow-hidden">
             {/* Header */}
             <header className="flex-none bg-[#041426] border-b border-[#374151] px-2 sm:px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                <div className="flex items-center z-30 flex-shrink-0" style={{ minWidth: 0 }}>
-                    <div className="rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105 h-5 w-5 sm:h-7 sm:w-7 flex-shrink-0">
-                        <img src="/logo.jpg" alt="LovSvar Logo" className="h-full w-full object-cover" />
+                <div className="flex items-center z-30 flex-shrink-0 min-w-0">
+                    <div className="rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105 flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6">
+                        <img 
+                            src="/logo.jpg" 
+                            alt="LovSvar Logo" 
+                            className="w-full h-full object-contain block"
+                        />
                     </div>
                 </div>
 
