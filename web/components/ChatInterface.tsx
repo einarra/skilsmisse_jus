@@ -164,46 +164,46 @@ export default function ChatInterface() {
     return (
         <div className="flex flex-col h-[100dvh] bg-[#041426] overflow-hidden">
             {/* Header */}
-            <header className="flex-none bg-[#041426] border-b border-[#374151] px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className="flex items-center z-30">
-                    <div className="rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105" style={{ height: '36px', flexShrink: 0 }}>
-                        <img src="/logo.jpg" alt="LovSvar Logo" className="h-full w-auto object-contain" />
+            <header className="flex-none bg-[#041426] border-b border-[#374151] px-2 sm:px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                <div className="flex items-center z-30 flex-shrink-0" style={{ minWidth: 0, maxWidth: '20%' }}>
+                    <div className="rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105 h-7 w-7 sm:h-9 sm:w-auto flex-shrink-0">
+                        <img src="/logo.jpg" alt="LovSvar Logo" className="h-full w-full sm:w-auto sm:object-contain object-cover" />
                     </div>
                 </div>
 
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
-                    <h1 className="text-xs sm:text-sm font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style={{ left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '60%' }}>
+                    <h1 className="text-[10px] sm:text-xs md:text-sm font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto">
                         Ekteskap
                     </h1>
                 </div>
 
-                <div className="flex items-center gap-3 z-30">
-                    <div className="flex bg-[#111827] p-1 rounded-xl border border-[#374151] shadow-inner" style={{ display: 'flex' }}>
+                <div className="flex items-center gap-1.5 sm:gap-3 z-30 flex-shrink-0" style={{ maxWidth: '30%', minWidth: 0 }}>
+                    <div className="flex bg-[#111827] p-0.5 sm:p-1 rounded-xl border border-[#374151] shadow-inner" style={{ display: 'flex' }}>
                         <button
                             onClick={() => setActiveTab('chat')}
                             aria-label="Bytt til Assistent-fane"
                             className={cn(
-                                "flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
+                                "flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
                                 activeTab === 'chat'
                                     ? "bg-[#3B82F6] text-white shadow-soft"
                                     : "text-[#9CA3AF] hover:text-[#F9FAFB]"
                             )}
                         >
-                            <MessageSquare size={12} />
-                            <span className="hidden xs:inline">Assistent</span>
+                            <MessageSquare size={12} className="flex-shrink-0" />
+                            <span className="hidden sm:inline">Assistent</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('search')}
                             aria-label="Bytt til Kildesøk-fane"
                             className={cn(
-                                "flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
+                                "flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all",
                                 activeTab === 'search'
                                     ? "bg-[#3B82F6] text-white shadow-soft"
                                     : "text-[#9CA3AF] hover:text-[#F9FAFB]"
                             )}
                         >
-                            <Globe size={12} />
-                            <span className="hidden xs:inline">Kildesøk</span>
+                            <Globe size={12} className="flex-shrink-0" />
+                            <span className="hidden sm:inline">Kildesøk</span>
                         </button>
                     </div>
 
