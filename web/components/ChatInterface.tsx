@@ -173,7 +173,7 @@ export default function ChatInterface() {
 
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
                     <h1 className="text-xs sm:text-sm font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto">
-                        LovSvar - Ekteskap og skilsmisse
+                        Ekteskap
                     </h1>
                 </div>
 
