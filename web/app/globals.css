@@ -88,36 +88,36 @@ body {
 
 /* Logo sizing for header */
 .header-logo-container {
-  width: 18px !important;
-  height: 18px !important;
-  max-width: 18px !important;
-  max-height: 18px !important;
-  min-width: 18px !important;
-  min-height: 18px !important;
+  width: 28px !important;
+  height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
 }
 
 .header-logo-container img {
-  width: 18px !important;
-  height: 18px !important;
-  max-width: 18px !important;
-  max-height: 18px !important;
+  width: 28px !important;
+  height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
   object-fit: contain !important;
 }
 
 @media (min-width: 640px) {
   .header-logo-container {
-    width: 22px !important;
-    height: 22px !important;
-    max-width: 22px !important;
-    max-height: 22px !important;
-    min-width: 22px !important;
-    min-height: 22px !important;
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
   }
 
   .header-logo-container img {
-    width: 22px !important;
-    height: 22px !important;
-    max-width: 22px !important;
-    max-height: 22px !important;
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
   }
 }
