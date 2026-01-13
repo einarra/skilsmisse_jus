@@ -176,7 +176,7 @@ export default function ChatInterface() {
 
                 <div className="flex-1 flex items-center justify-center z-20">
                     <h1 className="text-xs sm:text-sm md:text-base font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 leading-tight">
-                        Ekteskap
+                        Ekteskap-Svar
                     </h1>
                 </div>
 
