@@ -164,7 +164,7 @@ export default function ChatInterface() {
     return (
         <div className="flex flex-col h-[100dvh] bg-[#041426] overflow-hidden">
             {/* Header */}
-            <header className="flex-none bg-[#041426] border-b border-[#374151] px-2 sm:px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <header className="flex-none bg-[#041426] border-b border-[#374151] px-2 sm:px-4 z-20 shadow-sm relative" style={{ height: '64px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div className="flex items-center z-30 flex-shrink-0 min-w-0">
                     <div className="header-logo-container rounded-lg overflow-hidden border border-[#374151]/30 shadow-soft bg-white transition-transform hover:scale-105 flex-shrink-0">
                         <img 
@@ -174,8 +174,8 @@ export default function ChatInterface() {
                     </div>
                 </div>
 
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center" style={{ left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '60%' }}>
-                    <h1 className="text-xs sm:text-sm md:text-base font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 pointer-events-auto leading-tight">
+                <div className="flex-1 flex items-center justify-center z-20">
+                    <h1 className="text-xs sm:text-sm md:text-base font-semibold text-[#F9FAFB] tracking-tight whitespace-nowrap px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-[#041426]/80 backdrop-blur-md rounded-full shadow-lg border border-[#374151]/50 leading-tight">
                         Ekteskap
                     </h1>
                 </div>
